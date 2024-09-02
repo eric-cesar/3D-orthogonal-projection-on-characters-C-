@@ -14,6 +14,11 @@
 #define deltaBeta 0.005
 #define deltaGama 0.005
 
+// Ângulos iniciais
+#define startAlpha M_PI / 4
+#define startBeta M_PI / 6
+#define startGama M_PI / 9
+
 // Caractere para desenhar o cubo
 #define cubeCaracter 'N'
 
@@ -187,6 +192,10 @@ void draw(double projectedCube[8][2], int cubeEdges[12][2])
     // Conectando os vertices com uma linha
     conectEdges(cubeEdges, discreteCube, image);
 
+    // Linearizando os caracteres para ganhar desempenho (23.7 -> 18.5 sec)
+    int idx = 0;
+    char linearImage[width * height + height];
+
     // Desenhando na tela a matriz de caracteres usando a função printf();
     for (int i = 0; i < height; i++)
     {
@@ -194,21 +203,24 @@ void draw(double projectedCube[8][2], int cubeEdges[12][2])
         {
             if (image[i][j] == 0)
                 image[i][j] = ' ';
-        }
-        // Desenhando na tela uma string formada por um array de caracteres
-        printf("%s\n", image[i]);
-    }
 
-    //Obs testei a matriz de caracteres linearizada mas não houve melhora perceptivel na performance
+            linearImage[idx++] = image[i][j];
+        }
+        linearImage[idx++] = '\n';
+
+        // Desenhando na tela uma string formada por um array de caracteres
+        // printf("%s\n", image[i]);
+    }
+    printf("%s", linearImage);
 }
 
 // Função principal de execução do C
 int main()
 {
     // Definindo os angulos com os eixos iniciais
-    double alpha = M_PI / 4;
-    double beta = M_PI / 8;
-    double gama = M_PI / 16;
+    double alpha = startAlpha;
+    double beta = startBeta;
+    double gama = startGama;
 
     // Matriz que vai armazenar a projeção ortogonal do cubo rotacionado
     double projectedCube[8][2];
@@ -227,6 +239,5 @@ int main()
         // Desenhando na tela
         draw(projectedCube, cubeEdges);
     }
-
     return 0;
 }
